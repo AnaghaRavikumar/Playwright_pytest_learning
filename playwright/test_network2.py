@@ -2,7 +2,7 @@ import time
 
 from playwright.sync_api import Page, Playwright, expect
 
-from playwright.utils.api_base import APIUtils
+from utils.api_base import APIUtils
 
 
 #-> api call from browser, api call contacts server and returns response to browser -> browser uses this response to  generate html
@@ -11,7 +11,8 @@ from playwright.utils.api_base import APIUtils
 def intercept_request(route):
     route.continue_("https://rahulshettyacademy.com/api/ecom/order/get-orders-details?id=6711e249ae4c0b9f6fb")
 
-def test_network_2(page:Page):
+
+def test_network_2(page: Page):
     page.goto("https://rahulshettyacademy.com/client")
 
     #tell palywright to start listening the network call, using *because it is id and keep changing for logins.
@@ -23,18 +24,18 @@ def test_network_2(page:Page):
     page.get_by_role("button", name="ORDERS").click()
 
     page.get_by_role("button", name="View").first.click()
-    message= page.locator(".blink_me").text_content()
+    message = page.locator(".blink_me").text_content()
     print(message)
 
-def test_session_storage(playwright:Playwright):
-    api_utils = APIUtils
+
+def test_session_storage(playwright: Playwright):
+    api_utils = APIUtils()
     get_token = api_utils.get_token(playwright)
-    browser = playwright.chromium.launch(heeadless=False)
+    browser = playwright.chromium.launch(headless=False)
     context = browser.new_context()
     page = context.new_page()
     #script to inject token in session local storage
     page.add_init_script(f"""localStorage.setItem('token','{get_token}')""")
     page.goto("https://rahulshettyacademy.com/client")
-    page.get_by_role("button",name="ORDERS").click()
+    page.get_by_role("button", name="ORDERS").click()
     expect(page.get_by_text('Your Orders')).to_be_visible()
-
